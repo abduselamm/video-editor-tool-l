@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Video Tools</title>
+
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <!-- UniIcon CDN Link  -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"/>
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <!-- MDB -->
+    <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}" />
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark d-none d-lg-block" style="z-index: 2000;">
+    <div class="container-fluid">
+      <!-- Navbar brand -->
+      <a class="navbar-brand nav-link" style="color: black;" href="{% url 'home' %}">
+        <strong><img src="{% static 'img/Logo.png' %}" alt="logo"></strong>
+      </a>
+      <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
+        aria-controls="navbarExample01" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarExample01">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'video_merger_tools' %}" rel="nofollow">Merging Tools</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'metadata_changer' %}">Meta-data Changer</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Navbar -->
+
+  <style>
+    nav{
+      background-color: rgb(31, 11, 51);
+    }
+    nav img{
+      width: 180px;
+      height: 50px;
+    }
+
+    .both-form{
+      margin-left: 5%;
+      margin-top: 3%;
+    }
+    .both-form form{
+      float: left;
+    }
+    .both-form .form1{
+      margin-right: 20px;
+      padding: 10px;       
+      box-shadow: 1px 10px 10px 5px rgb(185, 105, 175);
+    }
+    .both-form .form2{
+      margin-left: 20px;
+      padding: 10px;       
+      box-shadow: 1px 10px 10px 5px rgb(185, 105, 175);
+    }
+    .both-form .form1 .form-check{
+      display: block;
+      display: block;
+      margin-right: 40px;
+    }
+    .form1 label{
+      padding: 10px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .form1 .row{
+      text-align: center;
+      padding-left: 10px;
+    }
+    .form1 .row select{
+      font-weight: 600;
+    }
+    .form1 input{
+      padding: 10px;
+      font-size: 23px;
+      font-weight: 600;
+    }
+    .form1 button{
+      padding: 10px;
+      font-weight: 500;
+      color: black;
+    }
+    .form2 label{
+      font-size: 20px;
+      font-weight: 500;
+      width: 500px;
+    }
+    .form2 button{
+      padding: 10px;
+      font-weight: 500;
+      color: black;
+    }
+    .progress12{
+      margin-bottom: 0%;
+      margin-top: 0%;
+  }
+  #progressBar{
+      padding: 20px;
+      width: 70%;
+  }
+  #finalMessage{
+    color: green;
+  }
+  #message{
+    color: brown;
+  }
+  </style>
+
+
+
+<script>
+  function start(al) {
+  var bar = document.getElementById('progressBar');
+  var status = document.getElementById('status');
+  var x = document.getElementById('progress12')
+  if (x.style.display === 'none'){
+    x.style.display = 'block'
+  }
+    status.innerHTML = al + "%";
+    bar.value = al;
+    al++;
+    var sim = setTimeout("start(" + al + ")", 100);
+    if (al == 97) {
+        status.innerHTML = "97%";
+        bar.value = 97;
+        clearTimeout(sim);
+        var finalMessage = document.getElementById('finalMessage');
+        var message = document.getElementById('message')
+        finalMessage.innerHTML = "Processing, Please Wait!!!";
+        message.innerHTML = "Please Don't Refresh this page. It Will redirect you to the Output page once it finished."
+    }
+  
+}
+var amountLoaded = 0;
+</script>   
+
+  <section class="progress12" id="progress12" style="display: none;">
+      <progress id="progressBar" value="0" max="100"></progress>
+      <span id="status"></span>
+      <h4 id="finalMessage"></h4>
+      <p id="message"></p>
+  </section>
+
+<div class="both-form">
+  <form class="form1 col-md-4" method="POST" enctype="multipart/form-data"> 
+    {% csrf_token %} 
+    <div class="form-group">
+        <label for="exampleFormControlFile1">Upload Your Video</label>
+        <input type="file" multiple name="video" required class="form-control-file" id="exampleFormControlFile1">
+    </div>
+
+    <div class="col-auto my-1">
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </div>
+  </form>
+
+    <form class="form2 col-md-6" method="POST">
+      {% csrf_token %}
+        <div class="form-group row">
+          <label for="inputEmail3" class="col-sm-4 col-form-label">Enter number of spins per video</label>
+          <div class="col-sm-8">
+            <input type="number" required name="spin" class="form-control" id="inputEmail3" placeholder="Enter number of spins per video">
+          </div>
+        </div>
+
+        <fieldset class="form-group">
+          <div class="row">
+            <legend class="col-form-label col-sm-4 pt-0"><label for="">Mute/Not</label></legend>
+            <div class="col-sm-8">
+              <div class="form-check">
+                <input class="form-check-input" required type="radio" name="gridRadios" id="gridRadios1" value="mute" >
+                <label class="form-check-label" style="color: chocolate;" for="gridRadios1">
+                  Mute
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="dont_mute" checked>
+                <label class="form-check-label" style="color: rgb(44, 107, 243);" for="gridRadios2">
+                  Don't Mute
+                </label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+        <div class="form-group row">
+          <label for="inputPassword3" class="col-sm-4 col-form-label">Output Formats:</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="format" required id="exampleFormControlSelect1">
+              <option value="">Choose...</option>
+              <option value="1080p">1080p</option>
+              <option value="full_hd">Full HD</option>
+              <option value="2k">2K</option>
+              <option value="4k">4K</option>
+            </select>
+          </div> 
+        </div>
+        <div class="form-group row">
+          <label for="inputPassword3" class="col-sm-4 col-form-label">Export:</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="export" required id="exampleFormControlSelect1">
+              <option value="by_original_name">By Original Name</option>
+              <option value="by_creator">By Creator</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-10">
+            <button type="submit" onclick="start(0)" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+    </form>
+</div>
+    
+    
+<style>
+  footer{
+    margin-top: 50%;
+    display: relative;
+
+  }
+</style>
+<footer>    
+<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+  © 2023 Copyright:
+  <a class="text-dark" href="#">Video Merger and Meta data changer tools</a>
+</div>
+<!-- Copyright -->
+</footer>
+<!--Footer-->
+<!-- MDB -->
+
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+<!-- Custom scripts -->
+<script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
