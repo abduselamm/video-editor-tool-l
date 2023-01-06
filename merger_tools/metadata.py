@@ -55,9 +55,7 @@ def metadata_changer(v,v_name,spin,mute,foldr,formats):
             h1=2048
             video = stream.filter('fps', fps,round='up').filter('scale',w1,h1)
         elif formats=='4k':
-            w1=2160
-            h1=3840
-            video = stream.filter('fps', fps,round='up').filter('scale',w1,h1)
+            video = stream.filter('fps', fps,round='up')
 
         if mute == 'dont_mute':
             try:
@@ -79,6 +77,11 @@ def metadata_changer(v,v_name,spin,mute,foldr,formats):
                 new_file.write(file+'\0'.encode('ascii'))  
         except:
             pass
+
+        if formats == '4k':
+            final=VideoFileClip(os.path.abspath("static/assets/newVideo/"+full_name+".mp4"))
+            final=final.fx(vfx.resize,(2160,3840))
+            final.write_videofile(os.path.abspath("static/assets/newVideo/"+full_name+".mp4"), fps = 30, codec = 'mpeg4')
         
         ff=Folder.objects.get(folder=foldr)
         oo=New_Metadata.objects.create(fold=ff,new_video=os.path.abspath("static/assets/newVideo/"+full_name+".mp4"))
@@ -137,9 +140,7 @@ def metadata_changer_byc(v,v_name,spin,mute,formats):
             h1=2048
             video = stream.filter('fps', fps,round='up').filter('scale',w1,h1)
         elif formats=='4k':
-            w1=2160
-            h1=3840
-            video = stream.filter('fps', fps,round='up').filter('scale',w1,h1)
+            video = stream.filter('fps', fps,round='up')
         
         if mute == 'dont_mute':
             try:
@@ -161,6 +162,11 @@ def metadata_changer_byc(v,v_name,spin,mute,formats):
                 new_file.write(file+'\0'.encode('ascii'))  
         except:
             pass
+
+        if formats == '4k':
+            final=VideoFileClip(os.path.abspath("static/assets/newVideo/"+full_name+".mp4"))
+            final=final.fx(vfx.resize,(2160,3840))
+            final.write_videofile(os.path.abspath("static/assets/newVideo/"+full_name+".mp4"), fps = 30, codec = 'mpeg4')
         
         k=ff[i].folder
         y=Folder.objects.get(folder=k)
