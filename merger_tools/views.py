@@ -7,6 +7,9 @@ import random
 from zipfile import ZipFile
 from os.path import basename
 from .metadata import *
+import os
+import shutil
+import zipfile
 #from .videomerger import *
 # Create your views here.
 
@@ -731,14 +734,14 @@ def output(request):
     c=outputs.count()
     Zip_file.objects.all().delete()
     zip_name = 'allvideo.zip'
-    with ZipFile(os.path.abspath('static/assets/download_zip/'+zip_name), 'w') as zipObj:
+    with ZipFile(os.path.abspath('static/assets/zip/'+zip_name), 'w') as zipObj:
         for file in outputs:
                     filename=file.output.path
                     zipObj.write(filename, basename(filename))
     
     zipObj.close()
 
-    if zip_name in os.path.abspath('static/assets/download_zip/'+zip_name):
+    if zip_name in os.path.abspath('static/assets/zip/'+zip_name):
         Zip_file.objects.create(file=zipObj.filename)
     zipf = Zip_file.objects.get()
     context = {'outputs':outputs,'zipf':zipf,'c':c}
@@ -754,7 +757,6 @@ def metadata(request):
         export = request.POST.get('export')
         mute = request.POST.get('gridRadios')
         formats = request.POST.get('format')
-        print('willlllllllll',videos,spin,export,mute,formats)
         
         if videos:
             MetaData_Video.objects.all().delete()
@@ -775,7 +777,6 @@ def metadata(request):
                 v = MetaData_Video.objects.all()
                 for i in v:
                     v_name = os.path.basename(i.video.name)
-                    print(v_name)
                     v_name=v_name[:-4]
                     fold = Folder.objects.create(folder=v_name)            
                     fold.save()
@@ -793,7 +794,6 @@ def metadata(request):
                 for i in range(len(f)):
                     v_name = os.path.basename(v[i].video.name)
                     foldr = f[i].folder
-                    print(v_name, foldr)
                     metadata_changer(v[i].video.path,v_name,int(spin),mute,foldr,formats)
             else:
                 for j in v:
@@ -804,9 +804,7 @@ def metadata(request):
                     
     return render(request, 'merger_tools/metadata.html')
 
-import os
-import shutil
-import zipfile
+
 
 def meta_output(request):
     meta = New_Metadata.objects.all()
@@ -817,14 +815,12 @@ def meta_output(request):
     shutil.rmtree(dir1, ignore_errors=True)
 
     for i in fol:
-        print('f:',i.folder)
         f=i.folder
         if str(f[:-3]) not in zip_name:
             zip_name="Exported By Original File Name"
         for j in meta:
             v=j.fold
             if str(f)==str(v):
-                print('vid:',j.new_video)
                 folde_name=f
 
                 dir = os.path.abspath('static/assets/download_zip/'+folde_name)
