@@ -18,23 +18,33 @@ def index(request):
         o_videos = request.FILES.getlist('original_video')
         m_videos = request.FILES.getlist('merged_video')
 
-
         O_Video.objects.all().delete()
         M_Video.objects.all().delete()
         Output_Video.objects.all().delete()
+
+        dir_name1 = os.path.abspath("static/assets/merged_uploaded/")
+        test1 = os.listdir(dir_name1)
+        dir_name2 = os.path.abspath("static/assets/original_uploaded/")
+        test2 = os.listdir(dir_name2)
+
+        for item in test1:
+            if item.endswith(".mp4") or item.endswith(".mkv") or item.endswith(".mov"):
+                os.remove(os.path.join(dir_name1, item))
+        for item in test2:
+            if item.endswith(".mp4") or item.endswith(".mkv") or item.endswith(".mov"):
+                os.remove(os.path.join(dir_name2, item))
 
         for o_video in o_videos:
             o_vid = O_Video.objects.create(
                 original_video=o_video,
             )
-          
+            o_vid.save()
+
         for m_video in m_videos:
             m_vid = M_Video.objects.create(
                 merged_video=m_video,
             )
-                
-        o_vid.save()
-        m_vid.save()
+            m_vid.save()
         return redirect('preview')
 
     context = {}
@@ -46,7 +56,6 @@ def cropp9_16(clip,n):
     try:
         if w>h:
             clip=clip.fx(vfx.resize,(h,h))
-        (w,h)=clip.size
 
         if n=="top":
             left = 0
@@ -152,6 +161,85 @@ def cropp1_1(clip,n):
         pass
     return clip
 
+def byheight(clip,n):
+    if n=="left":
+        (clip_w, clip_h) = clip.size
+        left = 0
+        top = 0
+        right = clip_h
+        bottom = clip_h
+        clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom)
+    elif n=='right':
+        (clip_w, clip_h) = clip.size
+        left = clip_w-clip_h
+        top = 0
+        right = clip_w
+        bottom = clip_h
+        clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom)
+    elif n=='middle_side':
+        (clip_w, clip_h) = clip.size
+        cutted_width=(clip_w-clip_h)/2
+        left = cutted_width
+        top = 0
+        right = clip_w-cutted_width
+        bottom = clip_h
+        clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom)
+    return clip
+
+def alishoo9_16(clip,n,w):
+    try:
+        """         if w>h:
+            clip=clip.fx(vfx.resize,(h,h))
+
+        if n=="top":
+            left = 0
+            top = 0
+            right = w
+            bottom = w
+            clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom)
+
+        elif n=="middle":
+            clip = vfx.crop(clip, width=w, height=w, x_center=w/2, y_center=h/2)
+        elif n=="bottom":
+            left = 0
+            top = h-w
+            right = w
+            bottom = h
+            clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom) """
+
+        if n=='bottom':
+            (clip_w, clip_h) = clip.size
+            left = clip_w-w
+            cutted_height=(clip_h-w)/2
+            top = cutted_height
+            right = clip_w
+            bottom = clip_h-cutted_height
+            clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom)
+        elif n=='middle':
+            (clip_w, clip_h) = clip.size
+            cutted_height=(clip_h-w)/2
+            cutted_width=(clip_w-w)/2
+            left = cutted_width
+            top = cutted_height
+            right = clip_w - cutted_width
+            bottom = clip_h-cutted_height
+            clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom)
+
+        elif n=='top':
+            (clip_w, clip_h) = clip.size
+            cutted_height=(clip_h-w)/2
+            left = 0
+            top = cutted_height
+            right = w
+            bottom = clip_h-cutted_height
+            clip = vfx.crop(clip,x1=left, y1=top, x2=right, y2=bottom)
+
+    except:
+        pass
+
+    return clip
+
+
 def temp1(sound,formats,crop_o,crop_m,resize,temp_size):
     cutted_o = O_Video.objects.all()
     cutted_m = M_Video.objects.all()
@@ -170,10 +258,44 @@ def temp1(sound,formats,crop_o,crop_m,resize,temp_size):
 
             w1,h1=clip1.size
             w2,h2=clip2.size
+            print(clip1.size)
+            print(clip2.size)
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
 
-            clip1=cropp9_16(clip1,crop_o)
-            clip2=cropp9_16(clip2,crop_m)
-                
+            print(clip1.size)
+            print(clip2.size)
+
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
                 clips = [[clip1],[clip2]]
@@ -211,12 +333,40 @@ def temp2(sound,formats,crop_o,crop_m,resize,temp_size):
 
             w1,h1=clip1.size
             w2,h2=clip2.size
-            tobecut1 = h1-w1
-            tobecut2 = h2-w2
-            
-            clip1=cropp9_16(clip1,crop_o)
-            clip2=cropp9_16(clip2,crop_m)
-            
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+
+
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
                 clips = [[clip2],[clip1]]
@@ -255,8 +405,40 @@ def temp3(sound,formats,crop_o,crop_m,resize,temp_size):
             d1=clip1.duration
             d2=clip2.duration
             
-            clip1=cropp9_16(clip1,crop_o)
-            clip2=cropp9_16(clip2,crop_m)
+            w1,h1=clip1.size
+            w2,h2=clip2.size
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
 
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
@@ -295,8 +477,41 @@ def temp4(sound,formats,crop_o,crop_m,resize,temp_size):
             d1=clip1.duration
             d2=clip2.duration
 
-            clip1=cropp9_16(clip1,crop_o)
-            clip2=cropp9_16(clip2,crop_m)
+            w1,h1=clip1.size
+            w2,h2=clip2.size
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+
 
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
@@ -333,8 +548,41 @@ def temp5(sound,formats,crop_o,crop_m,resize,temp_size):
 
             d1=clip1.duration
             d2=clip2.duration
-            clip1=cropp1_1(clip1,crop_o)
-            clip2=cropp1_1(clip2,crop_m)
+            w1,h1=clip1.size
+            w2,h2=clip2.size
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+
 
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
@@ -373,8 +621,41 @@ def temp6(sound,formats,crop_o,crop_m,resize,temp_size):
             
             d1=clip1.duration
             d2=clip2.duration
-            clip1=cropp1_1(clip1,crop_o)
-            clip2=cropp1_1(clip2,crop_m)
+            w1,h1=clip1.size
+            w2,h2=clip2.size
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+
 
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
@@ -412,8 +693,40 @@ def temp7(sound,formats,crop_o,crop_m,resize,temp_size):
             
             d1=clip1.duration
             d2=clip2.duration
-            clip1=cropp1_1(clip1,crop_o)
-            clip2=cropp1_1(clip2,crop_m)
+            w1,h1=clip1.size
+            w2,h2=clip2.size
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
             
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
@@ -450,8 +763,40 @@ def temp8(sound,formats,crop_o,crop_m,resize,temp_size):
             
             d1=clip1.duration
             d2=clip2.duration
-            clip1=cropp1_1(clip1,crop_o)
-            clip2=cropp1_1(clip2,crop_m)
+            w1,h1=clip1.size
+            w2,h2=clip2.size
+            if w1>h1 and w2>h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2<h2:
+                widht,height=clip2.size
+                clip1=alishoo9_16(clip1,crop_o,widht)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1<h1 and w2>h2:
+                widht,height=clip1.size
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=alishoo9_16(clip2,crop_m,widht)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1>h1 and w2==h2:
+                clip1=byheight(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            elif w1==h1 and w2>h1:
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=byheight(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
+            else:            
+                clip1=cropp9_16(clip1,crop_o)
+                clip2=cropp9_16(clip2,crop_m)
+                w11,h11=clip1.size
+                clip2=clip2.fx(vfx.resize,(w11,h11))
 
             if d2 > d1:
                 clip2 = clip2.subclip(0, d1)
@@ -575,6 +920,8 @@ def create_template(o_place,m_place,sound,formats,crop_o,crop_m,resize,temp_size
                     clip1=cropp1_1(clip1,crop_o)
                     clip2=cropp1_1(clip2,crop_m)
 
+            w11,h11=clip1.size
+            clip2=clip2.fx(vfx.resize,(w11,h11))
 
             if o_place=='top' and m_place=='bottom':
                 if d2 > d1:
@@ -750,6 +1097,9 @@ def output(request):
 def home(request):
     return render(request, 'merger_tools/home.html')
 
+from datetime import datetime
+import random
+
 def metadata(request):
     if request.method == 'POST':
         videos = request.FILES.getlist('video')
@@ -757,11 +1107,20 @@ def metadata(request):
         export = request.POST.get('export')
         mute = request.POST.get('gridRadios')
         formats = request.POST.get('format')
-        
+        start_date = request.POST.get('start-date')
+        end_date = request.POST.get('end-date')
+
+        print(start_date,end_date)
         if videos:
             MetaData_Video.objects.all().delete()
             New_Metadata.objects.all().delete()
+            dir_name = os.path.abspath("static/assets/metadata/")
+            test = os.listdir(dir_name)
 
+            for item in test:
+                if item.endswith(".mp4"):
+                    os.remove(os.path.join(dir_name, item))
+                    
             for vid_m in videos:
                 vid = MetaData_Video.objects.create(video=vid_m)
                 vid.save()
@@ -771,7 +1130,25 @@ def metadata(request):
                     #except:
                     #    pass            
 
-        if spin and export and formats and mute:
+        if spin and export and formats and mute and start_date and end_date:
+            start_date = start_date.replace("-", "/")
+            start_date = start_date.replace('T', ' ')
+            end_date = end_date.replace("-", "/")
+            end_date = end_date.replace('T', ' ')
+
+            start_date = datetime.strptime(start_date, '%Y/%m/%d %H:%M:%S')
+            end_date = datetime.strptime(end_date, '%Y/%d/%m %H:%M:%S')
+
+            first_timestamp = int(start_date.timestamp())
+            second_timestamp = int(end_date.timestamp())
+
+            dir_name = os.path.abspath("static/assets/newVideo/")
+            test = os.listdir(dir_name)
+
+            for item in test:
+                if item.endswith(".mp4"):
+                    os.remove(os.path.join(dir_name, item))
+
             Folder.objects.all().delete()
             if export=='by_original_name':
                 v = MetaData_Video.objects.all()
@@ -794,11 +1171,11 @@ def metadata(request):
                 for i in range(len(f)):
                     v_name = os.path.basename(v[i].video.name)
                     foldr = f[i].folder
-                    metadata_changer(v[i].video.path,v_name,int(spin),mute,foldr,formats)
+                    metadata_changer(v[i].video.path,v_name,int(spin),mute,foldr,formats,first_timestamp,second_timestamp)
             else:
                 for j in v:
                     v_name = os.path.basename(j.video.name)
-                    metadata_changer_byc(j.video.path,v_name,int(spin),mute,formats)
+                    metadata_changer_byc(j.video.path,v_name,int(spin),mute,formats,first_timestamp,second_timestamp)
 
             return redirect('metadata_changed_video')
                     
@@ -813,22 +1190,22 @@ def meta_output(request):
     zip_name='Exported By Creator'
     dir1 = os.path.abspath('static/assets/download_zip/')
     shutil.rmtree(dir1, ignore_errors=True)
+    if c != 0:
+        for i in fol:
+            f=i.folder
+            if str(f[:-3]) not in zip_name:
+                zip_name="Exported By Original File Name"
+            for j in meta:
+                v=j.fold
+                if str(f)==str(v):
+                    folde_name=f
 
-    for i in fol:
-        f=i.folder
-        if str(f[:-3]) not in zip_name:
-            zip_name="Exported By Original File Name"
-        for j in meta:
-            v=j.fold
-            if str(f)==str(v):
-                folde_name=f
-
-                dir = os.path.abspath('static/assets/download_zip/'+folde_name)
-                try:
-                    os.makedirs(dir)
-                    shutil.copy2(j.new_video.path, dir)
-                except:
-                    shutil.copy2(j.new_video.path, dir)
+                    dir = os.path.abspath('static/assets/download_zip/'+folde_name)
+                    try:
+                        os.makedirs(dir)
+                        shutil.copy2(j.new_video.path, dir)
+                    except:
+                        shutil.copy2(j.new_video.path, dir)
 
     Zip_file.objects.all().delete()
     dir = os.path.abspath('static/assets/download_zip/')

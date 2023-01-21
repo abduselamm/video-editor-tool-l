@@ -116,55 +116,182 @@
       color: black;
     }
     .progress12{
-      margin-bottom: 0%;
-      margin-top: 0%;
-  }
-  #progressBar{
-      padding: 20px;
-      width: 70%;
-  }
-  #finalMessage{
-    color: green;
-  }
+      width: 500px;
+    }
+
   #message{
     color: brown;
   }
+
+  #link {color: #E45635;display:block;font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;text-align:center; text-decoration: none;}
+#link:hover {color: #CCCCCC}
+
+#link, #link:hover {-webkit-transition: color 0.5s ease-out;-moz-transition: color 0.5s ease-out;-ms-transition: color 0.5s ease-out;-o-transition: color 0.5s ease-out;transition: color 0.5s ease-out;}
+
+/** BEGIN CSS **/
+        @keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @-moz-keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @-webkit-keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @-o-keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @-moz-keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @-webkit-keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @-o-keyframes rotate-loading {
+            0%  {transform: rotate(0deg);-ms-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -moz-transform: rotate(0deg);}
+            100% {transform: rotate(360deg);-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -moz-transform: rotate(360deg);}
+        }
+
+        @keyframes loading-text-opacity {
+            0%  {opacity: 0}
+            20% {opacity: 0}
+            50% {opacity: 1}
+            100%{opacity: 0}
+        }
+
+        @-moz-keyframes loading-text-opacity {
+            0%  {opacity: 0}
+            20% {opacity: 0}
+            50% {opacity: 1}
+            100%{opacity: 0}
+        }
+
+        @-webkit-keyframes loading-text-opacity {
+            0%  {opacity: 0}
+            20% {opacity: 0}
+            50% {opacity: 1}
+            100%{opacity: 0}
+        }
+
+        @-o-keyframes loading-text-opacity {
+            0%  {opacity: 0}
+            20% {opacity: 0}
+            50% {opacity: 1}
+            100%{opacity: 0}
+        }
+        .loading-container,
+        .loading {
+            height: 100px;
+            position: relative;
+            width: 100px;
+            border-radius: 100%;
+        }
+
+
+        .loading-container { margin: 40px auto }
+
+        .loading {
+            border: 2px solid transparent;
+            border-color: transparent rgb(11, 218, 80) transparent rgb(8, 228, 118);
+            -moz-animation: rotate-loading 1.5s linear 0s infinite normal;
+            -moz-transform-origin: 50% 50%;
+            -o-animation: rotate-loading 1.5s linear 0s infinite normal;
+            -o-transform-origin: 50% 50%;
+            -webkit-animation: rotate-loading 1.5s linear 0s infinite normal;
+            -webkit-transform-origin: 50% 50%;
+            animation: rotate-loading 1.5s linear 0s infinite normal;
+            transform-origin: 50% 50%;
+        }
+
+        .loading-container:hover .loading {
+            border-color: transparent #E45635 transparent #E45635;
+        }
+        .loading-container:hover .loading,
+        .loading-container .loading {
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            -ms-transition: all 0.5s ease-in-out;
+            -o-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+        }
+
+        #loading-text {
+            -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+            -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+            -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+            animation: loading-text-opacity 2s linear 0s infinite normal;
+            color: #3f12e2;
+            font-family: "Helvetica Neue, "Helvetica", ""arial";
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 45px;
+            opacity: 0;
+            position: absolute;
+            text-align: center;
+            text-transform: uppercase;
+            top: 0;
+            width: 100px;
+        }
   </style>
 
 
-
 <script>
-  function start(al) {
-  var bar = document.getElementById('progressBar');
-  var status = document.getElementById('status');
-  var x = document.getElementById('progress12')
-  if (x.style.display === 'none'){
-    x.style.display = 'block'
-  }
-    status.innerHTML = al + "%";
-    bar.value = al;
-    al++;
-    var sim = setTimeout("start(" + al + ")", 1000);
-    if (al == 97) {
-        status.innerHTML = "97%";
-        bar.value = 97;
-        clearTimeout(sim);
-        var finalMessage = document.getElementById('finalMessage');
-        var message = document.getElementById('message')
-        finalMessage.innerHTML = "Processing, Please Wait!!!";
-        message.innerHTML = "Please Don't Refresh this page. It Will redirect you to the Output page once it finished."
-    }
-  
-}
-var amountLoaded = 0;
-</script>   
 
-  <section class="progress12" id="progress12" style="display: none;">
-      <progress id="progressBar" value="0" max="100"></progress>
-      <span id="status"></span>
-      <h4 id="finalMessage"></h4>
-      <p id="message"></p>
-  </section>
+    function start(al) {
+    var val1 = document.getElementById('spin').value;
+    var val2 = document.getElementById('format').value;
+    
+    if (val1 != '' && val2 != ""){
+      var bar = document.getElementById('progressBar');
+      var status = document.getElementById('status');
+      var ring = document.getElementById('loading-container')
+      var x = document.getElementById('progress12')
+      if (ring.style.display === 'none'){
+        ring.style.display = 'block'
+      }
+      if (x.style.display === 'none'){
+        x.style.display = 'block'
+      }
+        al++;
+        
+        var sim = setTimeout("start(" + al + ")", 10);
+        if (al == 100) {
+            clearTimeout(sim);
+            var message = document.getElementById('message')
+            message.innerHTML = "Please don't refresh this page. It will redirect you to the output page once it finished."
+        }
+    }
+  }
+  
+var amountLoaded = 0;
+</script> 
+
+<div class="loading-container" id="loading-container" style="display: none;">
+  <div class="loading"></div>
+  <div id="loading-text">Processing</div>
+<!--   <section class="progress12" id="progress12" style="display: non;">
+    <p id="message"></p>
+  </section> -->
+</div>
+
+
 
 <div class="both-form">
   <form class="form1 col-md-4" method="POST" enctype="multipart/form-data"> 
@@ -173,7 +300,6 @@ var amountLoaded = 0;
         <label for="exampleFormControlFile1">Upload Your Video</label>
         <input type="file" multiple name="video" required class="form-control-file" id="exampleFormControlFile1">
     </div>
-
     <div class="col-auto my-1">
         <button type="submit" class="btn btn-primary">Upload</button>
     </div>
@@ -184,7 +310,7 @@ var amountLoaded = 0;
         <div class="form-group row">
           <label for="inputEmail3" class="col-sm-4 col-form-label">Enter number of spins per video</label>
           <div class="col-sm-8">
-            <input type="number" required name="spin" class="form-control" id="inputEmail3" placeholder="Enter number of spins per video">
+            <input type="number" required name="spin" class="form-control" id="spin" placeholder="Enter number of spins per video">
           </div>
         </div>
 
@@ -210,7 +336,7 @@ var amountLoaded = 0;
         <div class="form-group row">
           <label for="inputPassword3" class="col-sm-4 col-form-label">Output Formats:</label>
           <div class="col-sm-8">
-            <select class="form-control" name="format" required id="exampleFormControlSelect1">
+            <select class="form-control" name="format" required id="format">
               <option value="">Choose...</option>
               <option value="1080p">1080p</option>
               <option value="full_hd">Full HD</option>
@@ -226,6 +352,17 @@ var amountLoaded = 0;
               <option value="by_original_name">By Original Name</option>
               <option value="by_creator">By Creator</option>
             </select>
+          </div>
+        </div><br>
+        <div class="form-group row">
+          <label for="inputPassword3" class="col-sm-4 col-form-label">Adjust Date Interval:</label>
+          <div class="col-sm-4">
+            Start:
+            <input type="datetime-local" name="start-date" class="form-control" value="2023-01-11T06:30:02" name="meeting-time">
+          </div>
+          <div class="col-sm-4">
+            End:
+            <input type="datetime-local" name="end-date" class="form-control" value="2024-06-12T19:30:01" name="meeting-time">
           </div>
         </div>
         <div class="form-group row">
@@ -253,6 +390,7 @@ var amountLoaded = 0;
 </footer>
 <!--Footer-->
 <!-- MDB -->
+
 
 
 
